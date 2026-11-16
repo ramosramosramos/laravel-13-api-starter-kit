@@ -1,14 +1,25 @@
+
 name: Laravel CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, scramble]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, scramble]
 
 jobs:
   tests:
     runs-on: ubuntu-latest
+
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      FRONTEND_URL: http://localhost:5173
 
     steps:
       - name: Checkout repository
@@ -33,14 +44,8 @@ jobs:
       - name: Check code formatting
         run: vendor/bin/pint --test
 
+      - name: Validate OpenAPI documentation
+        run: php artisan scramble:analyze --fail-on-empty --fail-on-unknown
+
       - name: Run Pest tests
-        env:
-          APP_ENV: testing
-          APP_KEY: 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ':memory:'
-          CACHE_STORE: array
-          SESSION_DRIVER: array
-          QUEUE_CONNECTION: sync
-          MAIL_MAILER: array
         run: php artisan test

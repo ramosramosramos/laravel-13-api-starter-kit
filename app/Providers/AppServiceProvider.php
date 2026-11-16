@@ -39,6 +39,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->tuneModelBehavior();
         $this->configureSortingToFilipino();
+        $this->configureScramble();
     }
 
     /**
@@ -148,6 +149,18 @@ final class AppServiceProvider extends ServiceProvider
             return $sorted->values();
         });
 
+    }
+
+    protected function configureScramble(): void
+    {
+        // Scramble::configure()
+        //     ->routes(function (Route $route) {
+        //         return Str::startsWith($route->uri, 'api/');
+        //     });
+
+        // Gate::define('viewApiDocs', function (User $user) {
+        //     return in_array($user->email, ['admin@app.com']);
+        // });
     }
 
     /**

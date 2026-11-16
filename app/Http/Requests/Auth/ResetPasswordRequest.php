@@ -30,6 +30,7 @@ final class ResetPasswordRequest extends FormRequest
             'token' => ['required', 'string'],
             'password' => [
                 'required',
+                'string',
                 'confirmed',
                 Password::min(8),
             ],

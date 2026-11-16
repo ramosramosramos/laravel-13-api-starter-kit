@@ -24,6 +24,15 @@ use Illuminate\Validation\ValidationException;
 
 final class AuthController extends Controller
 {
+    /**
+     * Authenticate a user.
+     *
+     * @response array{
+     *     message: string,
+     *     user: array{id: int, name: string, email: string},
+     *     token: string
+     * }
+     */
     public function login(LoginRequest $request): JsonResponse
     {
 
@@ -42,7 +51,7 @@ final class AuthController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-
+        /** @var string $token */
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
@@ -73,7 +82,7 @@ final class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
             ],
-            'token' => $token,
+            'token' => (string) $token,
         ], 201);
     }
 
