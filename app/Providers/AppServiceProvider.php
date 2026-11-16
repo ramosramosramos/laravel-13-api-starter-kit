@@ -6,16 +6,16 @@ namespace App\Providers;
 
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use InvalidArgumentException;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Auth\Notifications\ResetPassword;
+use InvalidArgumentException;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -53,7 +53,7 @@ final class AppServiceProvider extends ServiceProvider
         );
 
         Password::defaults(
-            fn(): ?Password => app()->isProduction()
+            fn (): ?Password => app()->isProduction()
             ? Password::min(12)
                 ->mixedCase()
                 ->letters()
@@ -63,7 +63,7 @@ final class AppServiceProvider extends ServiceProvider
             : null,
         );
 
-        if (!$this->app->environment('local')) {
+        if (! $this->app->environment('local')) {
             URL::forceScheme('https');
         }
     }
@@ -72,15 +72,15 @@ final class AppServiceProvider extends ServiceProvider
     {
         ResetPassword::createUrlUsing(function (mixed $notifiable, string $token): string {
 
-            if (!$notifiable instanceof User) {
+            if (! $notifiable instanceof User) {
                 throw new InvalidArgumentException('Notifiable must be an instance of User.');
             }
 
             $email = $notifiable->getEmailForPasswordReset();
 
             return mb_rtrim((string) config()->string('app.frontend_url'), '/')
-                . '/reset-password?'
-                . http_build_query([
+                .'/reset-password?'
+                .http_build_query([
                     'token' => $token,
                     'email' => $email,
                 ]);
@@ -90,12 +90,12 @@ final class AppServiceProvider extends ServiceProvider
     protected function configureVerifyEmail(): void
     {
         VerifyEmail::createUrlUsing(function (mixed $notifiable): string {
-            if (!$notifiable instanceof User) {
+            if (! $notifiable instanceof User) {
                 throw new InvalidArgumentException('Notifiable must be an instance of User.');
             }
 
             $key = $notifiable->getKey();
-            if (!is_int($key) && !is_string($key)) {
+            if (! is_int($key) && ! is_string($key)) {
                 throw new InvalidArgumentException('User key must be an integer or string.');
             }
 
@@ -111,16 +111,15 @@ final class AppServiceProvider extends ServiceProvider
                 ]
             );
 
-
             $query = parse_url($backendUrl, PHP_URL_QUERY);
 
             return mb_rtrim(config()->string('app.frontend_url'), '/')
-                . '/verify-email/'
-                . $key
-                . '/'
-                . $hash
-                . '?'
-                . $query;
+                .'/verify-email/'
+                .$key
+                .'/'
+                .$hash
+                .'?'
+                .$query;
         });
     }
 
@@ -128,7 +127,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         Collection::macro('sortByFilipino', function (string|callable $key, bool $descending = false) {
             $normalize = function ($value): string {
-                //@phpstan-ignore-next-line
+                // @phpstan-ignore-next-line
                 $str = mb_strtolower((string) $value, 'UTF-8');
 
                 // Replace 'ng' and 'ñ' using placeholders so ASCII sorting places them in order:

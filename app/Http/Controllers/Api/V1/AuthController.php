@@ -35,8 +35,8 @@ final class AuthController extends Controller
             ->first();
 
         if (
-            !$user ||
-            !Hash::check((string) $request->string('password'), $user->password)
+            ! $user ||
+            ! Hash::check((string) $request->string('password'), $user->password)
         ) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
@@ -167,7 +167,7 @@ final class AuthController extends Controller
 
         if ($status !== Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
-                //@phpstan-ignore-next-line
+                // @phpstan-ignore-next-line
                 'token' => [__($status)],
             ]);
         }
